@@ -875,12 +875,19 @@ ese SI es un coche</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_pelogrosa</span>te paso mi wasap
-no pa ligar
-pa trabajar
+<span class="nick">shu_nenah_pelogrosa</span>a mi no me mandes fotos
+q luego mi novio se pone tonto
 
-mandame una foto
-con el outfit
+mandale una foto a tus colegas
+al grupo de la familia
+q ahi nadie te puede mentir
+
+ellos te vieron poki poki de verdad
+antes de las bodas
+antes de las canas
+antes de q te pusieras fino
+
+ponte el outfit
 el q te pondrias pa una fiesta poki poki de las de verdad
 no pa un bautizo
 no pa un after de ikea
@@ -890,16 +897,20 @@ visera
 gafas del chino q parezcan caras
 cara de "etiquetame"
 
-si sales de zara premium te mando a casa
-si sales de tuenti 2008
-hablamos</div>
+si te dicen q sales de zara premium
+te mando a casa
+si te dicen q sales de tuenti 2008
+nadie mejor q ellos pa saberlo
+
+q te suelten un codigo
+y me lo traes aqui</div>
       </div>
       <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">abrir wasap</a>
-      <div class="wa-note">cuando ella te valide, pon aqui lo q te ha dicho</div>
+      <div class="wa-note">cuando el grupo de la familia te de el codigo, ponlo aqui</div>
       <div id="p5error"></div>
       <div class="controls gap-top">
         <input type="text" id="input-P5" placeholder="codigo" autocomplete="off">
-        <button class="btn tuenti" onclick="submitP5()">lo ha dicho la peligrosa</button>
+        <button class="btn tuenti" onclick="submitP5()">me lo ha dado la familia</button>
       </div>
     </main>
   </section>
@@ -1441,7 +1452,7 @@ no me hagas sacar el tuenti de 2007 q ahi salia`);
 /* ---------- P5: link whatsapp + codigo ---------- */
 function buildWaLink(){
   const phone = (CONFIG.whatsapp || "").replace(/\D/g,"");
-  const text = "nenah aqi el poki\noutfit pa la fiesta\nno me dejes en visto q me caso";
+  const text = "familia aqi el poki\noutfit pa la fiesta\ndecidme si me reconoceis y soltad el codigo q me caso";
   const link = document.getElementById("waLink");
   if(link){
     link.href = "https://wa.me/" + phone + "?text=" + encodeURIComponent(text);
