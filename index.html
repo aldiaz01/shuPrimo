@@ -132,7 +132,7 @@ main{
   font-weight:700;
   color:var(--gold);
   display:block;
-  margin-bottom:4px;
+  margin-bottom:0;
   font-size:0.85rem;
   letter-spacing:0.2px;
 }
@@ -521,9 +521,9 @@ main > *{
   <section class="screen active" id="screen-P0">
     <div class="cover">
       <div class="msn-icon logo-tap" id="logoTap">💬</div>
-      <h1>messenger</h1>
+      <h1>Tus amigos me han dado algo para tí.</h1>
       <div class="sub">shu_morenito_19 te ha escrito</div>
-      <button class="btn" onclick="startGame()">abrir recado</button>
+      <button class="btn" onclick="startGame()">abrir mensaje</button>
     </div>
   </section>
 
@@ -540,7 +540,7 @@ main > *{
       <div class="bubble-row">
         <div class="avatar-inline morenito has-photo morenito-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_morenito_19</span>hola soy shu morenito 19</div>
+<span class="nick">shu_morenito_19</span>Que pasah shurmano!!! Que ya te has casado!! Enhorabuena!!!</div>
       </div>
       <div class="bubble-row">
         <div class="avatar-inline morenito has-photo morenito-avatar"></div>
@@ -553,9 +553,8 @@ main > *{
       <div class="bubble-row">
         <div class="avatar-inline morenito has-photo morenito-avatar"></div>
         <div class="bubble" id="p1bubble">
-<span class="nick">shu_morenito_19</span>holaaaaa
-soy shu_morenito_19
-yo soy cani cani cani cani
+<span class="nick">shu_morenito_19</span>hola soy shu morenito
+si no me conoces yo so cani cani cani cani y busco a un poki, poki poki poki
 
 tus colegas me han dao un paquete pa ti
 de la boda y to
@@ -593,9 +592,10 @@ no me vengas con el de linkedin q eso me da urticaria</div>
       <div class="bubble-row">
         <div class="avatar-inline morenito has-photo morenito-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_morenito_19</span>no tienes??
-UY
-sospechosiiiiisimo
+<span class="nick">shu_morenito_19</span>No tieness???
+Como que no existe??
+y mesenger ya no se usa???
+Y como has sobrevivido los ultimos 20 años???
 
 el poki poki siempre tenia el messenger abierto
 aunque estuviera en el baño
@@ -1220,7 +1220,11 @@ function revealMessages(screenEl){
         typing.remove();
         el.classList.remove("msg-pending");
         const bubble = el.querySelector(".bubble");
-        if(bubble){
+        // los bubbles con video o fotos no se "escriben": se detonan de golpe,
+        // asi el iframe/las imagenes nunca se separan del DOM (si se separan,
+        // el reproductor de youtube deja de responder al tacto/click)
+        const hasMedia = bubble && bubble.querySelector(".video-embed, .photo-stack");
+        if(bubble && !hasMedia){
           const nickEl = bubble.querySelector(".nick");
           const rest = Array.from(bubble.childNodes).filter(n => n !== nickEl);
           rest.forEach(n => n.remove());
@@ -1230,7 +1234,7 @@ function revealMessages(screenEl){
           });
         } else {
           i++;
-          setTimeout(next, 200);
+          setTimeout(next, 220);
         }
       }, typingDelay);
     } else {
