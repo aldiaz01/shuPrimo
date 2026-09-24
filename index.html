@@ -239,46 +239,53 @@ input[type="text"]:focus{
 .crossword-hints{
   display:flex;
   flex-direction:column;
-  gap:4px;
-  margin:6px 0 4px 0;
-  font-size:0.85rem;
-  color:var(--text-dim);
-}
-.crossword-list{
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-  margin:10px 0;
-}
-.crossword-word{
-  display:flex;
-  flex-direction:column;
   gap:6px;
-}
-.crossword-clue{
-  font-size:0.85rem;
+  margin:6px 0 12px 0;
+  font-size:0.82rem;
   color:var(--text-dim);
 }
-.crossword-clue b{
+.crossword-hints b{
+  color:var(--gold);
+}
+.crossword-hints .final-clue{
   color:var(--text);
+  font-weight:600;
 }
-.crossword-row{
-  display:flex;
-  gap:6px;
-  justify-content:center;
-  flex-wrap:wrap;
+.crossword-grid-wrap{
+  overflow-x:auto;
+  padding:4px 0 10px 0;
+}
+.crossword-grid{
+  display:grid;
+  gap:3px;
+  width:max-content;
+  margin:0 auto;
+}
+.cw-cell{
+  position:relative;
+}
+.cw-num{
+  position:absolute;
+  top:-1px;
+  left:2px;
+  font-size:0.5rem;
+  color:var(--text-dim);
+  line-height:1;
+  z-index:2;
+  pointer-events:none;
 }
 .letter-box{
-  width:34px;height:42px;
-  border-radius:8px;
+  width:24px;height:30px;
+  border-radius:5px;
   border:2px solid #2b2b40;
   background:#0f0f18;
   color:var(--text);
   text-align:center;
-  font-size:1.2rem;
+  font-size:0.95rem;
   font-weight:800;
   text-transform:uppercase;
   font-family:inherit;
+  padding:0;
 }
 .letter-box:focus{
   outline:none;
@@ -291,9 +298,21 @@ input[type="text"]:focus{
 }
 .letter-box.correct{
   border-color:#3ecf6a;
+  background:#0f2016;
+  color:#8be3a6;
 }
 .letter-box.wrong{
   border-color:var(--error);
+  background:#2a0f14;
+}
+@keyframes cwShake{
+  10%,90%{ transform:translateX(-2px); }
+  20%,80%{ transform:translateX(3px); }
+  30%,50%,70%{ transform:translateX(-4px); }
+  40%,60%{ transform:translateX(4px); }
+}
+.letter-box.shake{
+  animation:cwShake .4s;
 }
 .cover{
   flex:1;
@@ -989,20 +1008,20 @@ y me piden la pasta ellos. Puedes buscar en google que aquí no estan los curas 
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
         <div class="topbar-name">crucigrama</div>
-        <div class="topbar-status">6 pistas, 6 palabras</div>
+        <div class="topbar-status">6 pistas, 1 crucigrama</div>
       </div>
     </div>
     <main>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_peligrosa</span>rellena cada palabra con su pista. las casillas doradas guardan una sorpresa</div>
+<span class="nick">shu_nenah_peligrosa</span>rellena las horizontales. si fallas una, se borra sola. la columna dorada es la sorpresa final</div>
       </div>
-      <div class="crossword-list" id="crosswordList"></div>
+      <div class="crossword-hints" id="crosswordHints"></div>
+      <div class="crossword-grid-wrap">
+        <div class="crossword-grid" id="crosswordGrid"></div>
+      </div>
       <div id="p6error"></div>
-      <div class="controls gap-top">
-        <button class="btn tuenti" onclick="submitP6()">comprobar</button>
-      </div>
     </main>
   </section>
 
@@ -1506,6 +1525,10 @@ mira el wasap`);
 }
 
 /* ---------- P6: crucigrama ---------- */
+// SPINE_COL: columna del crucigrama por la que pasa la palabra vertical
+// (CONFIG.palabraCrucigrama). "special" es el indice (0 = primera letra)
+// de cada palabra horizontal que coincide con esa columna vertical.
+const SPINE_COL = 4;
 const CROSSWORD_WORDS = [
   { clue: "la unica red social de verdad, ahi se firmaba el muro y se etiquetaba la foto del espejo", answer: "TUENTI", special: 4 },
   { clue: "color del mejor coche q has tenido, mucho mas STILO q el de ahora", answer: "BLANCO", special: 2 },
@@ -1514,70 +1537,107 @@ const CROSSWORD_WORDS = [
   { clue: "en la cabeza, si la llevas recta eres un pringao, si la llevas bien eres tuenti 2008", answer: "GORRA", special: 1 },
   { clue: "el souvenir de la fiesta, lo unico q te dura desde el sabado biche hasta el lunes", answer: "RESACA", special: 0 }
 ];
+const CROSSWORD_FINAL_CLUE = "donde te han escondido tus amigos el dinero";
+
 function buildCrossword(){
-  const list = document.getElementById("crosswordList");
-  list.innerHTML = "";
+  const hints = document.getElementById("crosswordHints");
+  hints.innerHTML = "";
   CROSSWORD_WORDS.forEach((w, wi) => {
-    const wordDiv = document.createElement("div");
-    wordDiv.className = "crossword-word";
+    const line = document.createElement("div");
+    line.innerHTML = `<b>${wi+1}.</b> ${w.clue}`;
+    hints.appendChild(line);
+  });
+  const finalLine = document.createElement("div");
+  finalLine.className = "final-clue";
+  finalLine.innerHTML = `<b>${CROSSWORD_WORDS.length+1} (vertical).</b> ${CROSSWORD_FINAL_CLUE}`;
+  hints.appendChild(finalLine);
 
-    const clueDiv = document.createElement("div");
-    clueDiv.className = "crossword-clue";
-    clueDiv.innerHTML = `<b>${wi+1}.</b> ${w.clue}`;
-    wordDiv.appendChild(clueDiv);
+  const grid = document.getElementById("crosswordGrid");
+  grid.innerHTML = "";
+  let cols = 0;
+  CROSSWORD_WORDS.forEach(w => {
+    const startCol = SPINE_COL - w.special;
+    cols = Math.max(cols, startCol + w.answer.length);
+  });
+  grid.style.gridTemplateColumns = `repeat(${cols}, 24px)`;
+  grid.style.gridTemplateRows = `repeat(${CROSSWORD_WORDS.length}, 30px)`;
 
-    const row = document.createElement("div");
-    row.className = "crossword-row";
-    row.dataset.word = wi;
-    for(let i=0; i<w.answer.length; i++){
+  CROSSWORD_WORDS.forEach((w, ri) => {
+    const startCol = SPINE_COL - w.special;
+    for(let ci=0; ci<w.answer.length; ci++){
+      const cell = document.createElement("div");
+      cell.className = "cw-cell";
+      cell.style.gridRow = String(ri+1);
+      cell.style.gridColumn = String(startCol+ci+1);
+      if(ci === 0){
+        const num = document.createElement("span");
+        num.className = "cw-num";
+        num.textContent = String(ri+1);
+        cell.appendChild(num);
+      }
       const box = document.createElement("input");
       box.type = "text";
       box.className = "letter-box";
-      if(i === w.special) box.classList.add("special");
+      if(ci === w.special) box.classList.add("special");
       box.maxLength = 1;
       box.autocomplete = "off";
-      box.dataset.word = wi;
-      box.dataset.idx = i;
-      box.addEventListener("input", () => {
-        box.value = box.value.replace(/[^a-zA-ZñÑ]/g,"");
-        box.classList.remove("correct","wrong");
-        if(box.value && box.nextElementSibling && box.nextElementSibling.classList.contains("letter-box")){
-          box.nextElementSibling.focus();
-        }
-      });
-      box.addEventListener("keydown", (e) => {
-        if(e.key === "Backspace" && !box.value && box.previousElementSibling && box.previousElementSibling.classList.contains("letter-box")){
-          box.previousElementSibling.focus();
-        }
-      });
-      row.appendChild(box);
+      box.dataset.row = ri;
+      box.dataset.col = ci;
+      box.addEventListener("input", () => onCwInput(box, ri));
+      box.addEventListener("keydown", (e) => onCwKeydown(e, box, ri));
+      cell.appendChild(box);
+      grid.appendChild(cell);
     }
-    wordDiv.appendChild(row);
-    list.appendChild(wordDiv);
   });
 }
-function submitP6(){
-  let allCorrect = true;
-  CROSSWORD_WORDS.forEach((w, wi) => {
-    const boxes = Array.from(document.querySelectorAll(`.letter-box[data-word="${wi}"]`));
-    const guess = normWord(boxes.map(b => b.value).join(""));
-    const ok = guess === normWord(w.answer);
-    boxes.forEach(b => {
-      b.classList.remove("correct","wrong");
-      b.classList.add(ok ? "correct" : "wrong");
-    });
-    if(!ok) allCorrect = false;
-  });
 
-  showLoading("comprobando crucigrama", "nenah", () => {
-    if(!allCorrect){
-      showError("p6error", "nenah",
-`ni de coña
-piensa en lavadoras
-y en tesoros cutres`);
-      return;
-    }
-    clearError("p6error");
+function cwRowBoxes(ri){
+  return Array.from(document.querySelectorAll(`.letter-box[data-row="${ri}"]`))
+    .sort((a,b) => Number(a.dataset.col) - Number(b.dataset.col));
+}
+
+function onCwInput(box, ri){
+  box.value = box.value.replace(/[^a-zA-ZñÑ]/g,"").toUpperCase();
+  box.classList.remove("wrong");
+  if(box.value){
+    const boxes = cwRowBoxes(ri);
+    const idx = Number(box.dataset.col);
+    if(idx+1 < boxes.length) boxes[idx+1].focus();
+  }
+  checkCwWord(ri);
+}
+
+function onCwKeydown(e, box, ri){
+  if(e.key === "Backspace" && !box.value){
+    const boxes = cwRowBoxes(ri);
+    const idx = Number(box.dataset.col);
+    if(idx > 0) boxes[idx-1].focus();
+  }
+}
+
+function checkCwWord(ri){
+  const w = CROSSWORD_WORDS[ri];
+  const boxes = cwRowBoxes(ri);
+  if(boxes.some(b => !b.value)) return;
+  const guess = normWord(boxes.map(b => b.value).join(""));
+  if(guess === normWord(w.answer)){
+    boxes.forEach(b => { b.classList.remove("wrong"); b.classList.add("correct"); b.disabled = true; });
+    checkCwAllDone();
+  } else {
+    boxes.forEach(b => b.classList.add("shake","wrong"));
+    setTimeout(() => {
+      boxes.forEach(b => { b.value = ""; b.classList.remove("shake","wrong"); });
+      boxes[0].focus();
+    }, 420);
+  }
+}
+
+function checkCwAllDone(){
+  const allDone = CROSSWORD_WORDS.every((w, ri) =>
+    cwRowBoxes(ri).every(b => b.classList.contains("correct")));
+  if(!allDone) return;
+  clearError("p6error");
+  showLoading("abriendo el ultimo mensaje", "nenah", () => {
     goTo("P7");
   });
 }
@@ -1605,11 +1665,6 @@ document.addEventListener("DOMContentLoaded", () => {
        });
      }
    });
-  document.querySelectorAll("#crosswordList .letter-box").forEach(box => {
-    box.addEventListener("keydown", (e) => {
-      if(e.key === "Enter"){ submitP6(); }
-    });
-  });
 });
 </script>
 </body>
