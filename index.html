@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>messenger</title>
+<style>
+/* =========================================================================
+   CÓMO CAMBIAR LOS DATOS
+   Busca el objeto CONFIG más abajo, dentro de la etiqueta <script>.
+   - instagram:        el instagram real de Adri, sin @, en minúsculas
+                        (si pones "Adri.Poki" también vale, se normaliza solo)
+   - matriculaAhora:    matrícula del coche que lleva ahora
+   - matriculaStilo:    matrícula del Fiat Stilo blanco de 3 puertas
+   - whatsapp:          número de whatsapp de la peña, con prefijo 34 y
+                         sin espacios ni signos. Ej: "34612345678"
+   - codigoFoto:        código que la peña le dice a Adri por whatsapp
+                         cuando la foto vale (por defecto LOPARTE)
+   - palabraCrucigrama: la palabra del crucigrama (por defecto TAMBOR)
+   No hace falta tocar nada más del archivo.
+   ========================================================================= */
+:root{
+  --bg: #0b0b12;
+  --bg-card: #14141f;
+  --msn-blue: #1d5fd6;
+  --msn-blue-dark: #123a86;
+  --tuenti-blue: #0e6cc2;
+  --tuenti-blue-dark: #084a86;
+  --gold: #e8c15a;
+  --text: #f1eee6;
+  --text-dim: #b9b6c9;
+  --error: #ff5c72;
+  --ok: #6be08b;
+  --bubble-them: #1c1c2b;
+  --bubble-them-border: #2b2b40;
+  --radius: 16px;
+  font-size: 16px;
+}
+*{box-sizing:border-box;}
+html,body{
+  margin:0;padding:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Comic Neue','Tahoma','Verdana',sans-serif;
+  min-height:100vh;
+  -webkit-text-size-adjust:100%;
+}
+body{
+  display:flex;
+  justify-content:center;
+  padding:0;
+}
+#app{
+  width:100%;
+  max-width:480px;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(29,95,214,0.18), transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(232,193,90,0.10), transparent 40%),
+    var(--bg);
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  background:linear-gradient(180deg, var(--msn-blue), var(--msn-blue-dark));
+  border-bottom:2px solid #0a2a63;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.topbar.tuenti{
+  background:linear-gradient(180deg, var(--tuenti-blue), var(--tuenti-blue-dark));
+  border-bottom:2px solid #063258;
+}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:bold;font-size:16px;
+  flex-shrink:0;
+  border:2px solid rgba(255,255,255,0.6);
+}
+.avatar.morenito{background:#ffb238;color:#3a2400;}
+.avatar.nenah{background:#ff5ca8;color:#3a0022;}
+.topbar-name{
+  font-weight:700;
+  font-size:0.95rem;
+  color:#fff;
+  text-shadow:0 1px 1px rgba(0,0,0,0.4);
+}
+.topbar-status{
+  font-size:0.7rem;
+  color:#dce6ff;
+  opacity:0.85;
+}
+main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:18px 14px 100px 14px;
+  gap:14px;
+  overflow-y:auto;
+}
+.bubble-row{
+  display:flex;
+  gap:8px;
+  align-items:flex-end;
+}
+.bubble{
+  background:var(--bubble-them);
+  border:1px solid var(--bubble-them-border);
+  border-radius:var(--radius);
+  border-bottom-left-radius:4px;
+  padding:12px 14px;
+  max-width:82%;
+  white-space:pre-wrap;
+  line-height:1.45;
+  font-size:0.98rem;
+  box-shadow:0 2px 8px rgba(0,0,0,0.25);
+  animation:pop .25s ease;
+}
+@keyframes pop{
+  from{opacity:0; transform:translateY(6px) scale(.98);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+.nick{
+  font-weight:700;
+  color:var(--gold);
+  display:block;
+  margin-bottom:4px;
+  font-size:0.85rem;
+  letter-spacing:0.2px;
+}
+.avatar-inline{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:bold;font-size:14px;flex-shrink:0;
+}
+.avatar-inline.morenito{background:#ffb238;color:#3a2400;}
+.avatar-inline.nenah{background:#ff5ca8;color:#3a0022;}
+.stilo-word{
+  color:var(--gold);
+  font-size:1.3em;
+  font-weight:800;
+  letter-spacing:1px;
+  text-shadow:0 0 8px rgba(232,193,90,0.5);
+}
+.shake{
+  animation:shake .4s ease;
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%{transform:translateX(-8px);}
+  40%{transform:translateX(8px);}
+  60%{transform:translateX(-5px);}
+  80%{transform:translateX(5px);}
+}
+.controls{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+input[type="text"]{
+  width:100%;
+  padding:14px 12px;
+  border-radius:12px;
+  border:2px solid #2b2b40;
+  background:#0f0f18;
+  color:var(--text);
+  font-size:16px;
+  font-family:inherit;
+}
+input[type="text"]:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+.btn{
+  border:none;
+  border-radius:14px;
+  padding:14px 16px;
+  font-size:1rem;
+  font-weight:800;
+  cursor:pointer;
+  font-family:inherit;
+  color:#fff;
+  background:linear-gradient(180deg,var(--msn-blue),var(--msn-blue-dark));
+  box-shadow:0 3px 0 #0a2a63, 0 6px 14px rgba(0,0,0,0.35);
+  transition:transform .08s ease;
+}
+.btn:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 #0a2a63, 0 3px 8px rgba(0,0,0,0.35);
+}
+.btn.tuenti{
+  background:linear-gradient(180deg,var(--tuenti-blue),var(--tuenti-blue-dark));
+  box-shadow:0 3px 0 #063258, 0 6px 14px rgba(0,0,0,0.35);
+}
+.btn.tuenti:active{
+  box-shadow:0 1px 0 #063258, 0 3px 8px rgba(0,0,0,0.35);
+}
+.btn.gold{
+  background:linear-gradient(180deg,#f4d27a,var(--gold));
+  color:#3a2400;
+  box-shadow:0 3px 0 #a9832b, 0 6px 14px rgba(0,0,0,0.35);
+}
+.btn.gold:active{
+  box-shadow:0 1px 0 #a9832b, 0 3px 8px rgba(0,0,0,0.35);
+}
+.btn.wa{
+  background:linear-gradient(180deg,#3fdc7a,#149441);
+  box-shadow:0 3px 0 #0c6b2e, 0 6px 14px rgba(0,0,0,0.35);
+  text-align:center;
+  text-decoration:none;
+  display:block;
+}
+.error-msg{
+  color:var(--error);
+  background:rgba(255,92,114,0.1);
+  border:1px solid rgba(255,92,114,0.4);
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:0.9rem;
+  white-space:pre-wrap;
+}
+.hint-line{
+  color:var(--text-dim);
+  font-size:0.85rem;
+}
+.crossword-hints{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin:6px 0 4px 0;
+  font-size:0.85rem;
+  color:var(--text-dim);
+}
+.crossword-row{
+  display:flex;
+  gap:6px;
+  justify-content:center;
+}
+.letter-box{
+  width:38px;height:46px;
+  border-radius:8px;
+  border:2px solid #2b2b40;
+  background:#0f0f18;
+  color:var(--text);
+  text-align:center;
+  font-size:1.3rem;
+  font-weight:800;
+  text-transform:uppercase;
+  font-family:inherit;
+}
+.letter-box:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+.cover{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+  text-align:center;
+  padding:40px 24px;
+}
+.cover h1{
+  font-size:2rem;
+  margin:0;
+  color:#fff;
+  letter-spacing:0.5px;
+}
+.cover .sub{
+  color:var(--text-dim);
+  font-size:1rem;
+}
+.cover .msn-icon{
+  font-size:3.2rem;
+}
+.config-warning{
+  background:#3a0f14;
+  color:#ffb3bd;
+  border:1px solid #7a1c28;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:0.8rem;
+  margin:10px 14px 0 14px;
+  white-space:pre-wrap;
+}
+.logo-tap{
+  cursor:pointer;
+  user-select:none;
+}
+.restart-link{
+  position:fixed;
+  bottom:8px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:0.7rem;
+  color:#4a4a5e;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:6px 10px;
+  z-index:5;
+}
+footer.small{
+  text-align:center;
+  padding:10px;
+  font-size:0.65rem;
+  color:#3a3a4d;
+}
+.screen{display:none;}
+.screen.active{display:flex; flex-direction:column; flex:1;}
+.gap-top{margin-top:auto;}
+.wa-note{
+  font-size:0.82rem;
+  color:var(--text-dim);
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="config-warning" id="configWarning" style="display:none;"></div>
+
+  <!-- P0 Portada -->
+  <section class="screen active" id="screen-P0">
+    <div class="cover">
+      <div class="msn-icon logo-tap" id="logoTap">💬</div>
+      <h1>messenger</h1>
+      <div class="sub">shu_morenito_19 te ha escrito</div>
+      <button class="btn" onclick="goTo('P1')">abrir recado</button>
+    </div>
+  </section>
+
+  <!-- P1 -->
+  <section class="screen" id="screen-P1">
+    <div class="topbar">
+      <div class="avatar morenito">M</div>
+      <div>
+        <div class="topbar-name">shu_morenito_19</div>
+        <div class="topbar-status">en línea · *nudge*</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline morenito">M</div>
+        <div class="bubble" id="p1bubble">
+<span class="nick">shu_morenito_19</span>*nudge*
+
+holaaaaa
+soy shu_morenito_19
+yo soy cani cani cani cani
+
+tus colegas me han dao un paquete pa ti
+de la boda y to
+q son unos cagaos
+q no te lo quieren dar en mano
+xq luego vas y lo gastas en toallas y en una freidora
+
+yo te lo guardo
+pero primero dime q eres tu
+no un primo con la cuenta prestada
+
+pasame tu tuenti
+o tu messenger
+el nick de verdad
+el q tenias con las x y las barrabajas
+no me vengas con el de linkedin q eso me da urticaria</div>
+      </div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P1" placeholder="tuenti / messenger" autocomplete="off">
+        <button class="btn" onclick="submitP1()">enviar</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P2 -->
+  <section class="screen" id="screen-P2">
+    <div class="topbar">
+      <div class="avatar morenito">M</div>
+      <div>
+        <div class="topbar-name">shu_morenito_19</div>
+        <div class="topbar-status">escribiendo…</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline morenito">M</div>
+        <div class="bubble">
+<span class="nick">shu_morenito_19</span>no tienes??
+UY
+sospechosiiiiisimo
+
+el poki poki siempre tenia el messenger abierto
+aunque estuviera en el baño
+aunque estuviera conduciendo
+aunque estuviera "estudiando"
+
+y ahora me dices q no
+o sea q te has pasado al enemigo
+instagram
+tiktok
+esa mierda q no es red social
+q es un centro comercial con musica
+
+bueno
+dame lo q tengas
+tu insta o el invento raro q useis ahora
+a ver si x lo menos el nombre eres tu
+y no "adri.oficial.viajes.con.ella"</div>
+      </div>
+      <div id="p2error"></div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P2" placeholder="@instagram" autocomplete="off">
+        <button class="btn" onclick="submitP2()">este soy yo</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P2 acierto -->
+  <section class="screen" id="screen-P2b">
+    <div class="topbar">
+      <div class="avatar morenito">M</div>
+      <div>
+        <div class="topbar-name">shu_morenito_19</div>
+        <div class="topbar-status">en línea</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline morenito">M</div>
+        <div class="bubble">
+<span class="nick">shu_morenito_19</span>ufff niño
+q es eso
+
+eso no es un perfil
+eso es un curriculum
+
+donde estan las fotos del espejo del baño
+donde esta la gorra hacia atras
+donde esta el "si me muero mañana q me dirias hoy"
+
+tu no eres el verdadero adri poki poki
+tu eres el adri q paga parking
+
+solo le suelto el talego al original
+
+q te mire shu_nenah_pelogrosa
+ella tiene ojito pa esto
+si dice q lo partes
+yo te abro el paquete
+si dice q eres un perfil nuevo
+te dejo en visto hasta la siguiente boda</div>
+      </div>
+      <div class="controls gap-top">
+        <button class="btn tuenti" onclick="goTo('P3')">hablar con la peligrosa</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P3 -->
+  <section class="screen" id="screen-P3">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">tu muro tiene visitas</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>ey
+soy shu_nenah_pelogrosa
+
+a mi no me vengas de novio bonito
+q yo te he visto en el tuenti
+o te he visto o te he oido
+q es casi lo mismo
+
+lo primero de un poki poki
+no es la chaqueta
+no es la frase del muro
+es el COCHE
+
+nada de coches de padre
+nada de berlinas grises q parecen un banco
+nada de "es q consume poco"
+
+lo guapo es un coche cani
+q te llene de multas
+q la poli te conozca x el ruido
+no x el dni
+
+pasame la matricula del q llevas ahora
+q lo consulto con mis contactos
+q yo conozco gente
+gente q pone radares en la carretera
+o eso digo pa quedar bien</div>
+      </div>
+      <div id="p3error"></div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P3" placeholder="0000 XXX" autocomplete="off">
+        <button class="btn tuenti" onclick="submitP3()">consultar con la poli</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P3 acierto -->
+  <section class="screen" id="screen-P3b">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">en línea</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>he consultado
+
+que mierda de coche es ese
+
+0 multas
+0 broncas
+0 parking de madrugada
+este coche va a mercadona
+este coche pide cita en el taller
+este coche le dice hola a los peatones
+
+ESO NO ES POKI
+eso es yerno</div>
+      </div>
+      <div class="controls gap-top">
+        <button class="btn tuenti" onclick="goTo('P4')">seguir</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P4 -->
+  <section class="screen" id="screen-P4">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">escribiendo…</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>tu deberias tener un coche mas guapo
+blanco
+3 puertas
+medio tuning
+el volumen mas alto q el motor
+
+tus colegas me han dicho una cosa
+q tu tienes mucho mas
+<span class="stilo-word">STILO</span>
+
+si
+lo he escrito asi
+a ver si pillas
+
+pasame la matricula del otro
+del de verdad
+aunque ya no lo tengas
+aunque este en el desguace
+aunque lo hayas vendido a un primo
+
+un poki poki
+aunque el coche se muera
+nunca deja de poseerlo
+q eso no es un fiat
+eso es una personalidad con ruedas</div>
+      </div>
+      <div id="p4error"></div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P4" placeholder="0000 XXX" autocomplete="off">
+        <button class="btn tuenti" onclick="submitP4()">esta es la de verdad</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P4 acierto -->
+  <section class="screen" id="screen-P4b">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">en línea</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>AAAAH
+
+esa si
+esa si q es una matricula con pasado
+
+q coche mas wapo chaval
+blanco
+corto
+con cara de multa
+
+yo a ese lo he visto
+en el parking del fabrik
+en el de radical
+aparcao de aquella manera
+con la musica to alta
+y el dueño pegao al movil
+esperando a q le dieran el nudge
+
+eso si es un coche
+lo otro era un electrodomestico
+
+empiezas a gustarme
+o sea
+no te enrolles
+q yo soy peligrosa
+pero empiezas</div>
+      </div>
+      <div class="controls gap-top">
+        <button class="btn tuenti" onclick="goTo('P5')">ok nenah q te mando la foto</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P5 -->
+  <section class="screen" id="screen-P5">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">wasap</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>te paso mi wasap
+no pa ligar
+pa trabajar
+
+mandame una foto
+con el outfit
+el q te pondrias pa una fiesta poki poki de las de verdad
+no pa un bautizo
+no pa un after de ikea
+
+camiseta blanca de hombrera
+visera
+gafas del chino q parezcan caras
+cara de "etiquetame"
+
+si sales de zara premium te mando a casa
+si sales de tuenti 2008
+hablamos</div>
+      </div>
+      <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">abrir wasap</a>
+      <div class="wa-note">cuando ella te valide, pon aqui lo q te ha dicho</div>
+      <div id="p5error"></div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P5" placeholder="codigo" autocomplete="off">
+        <button class="btn tuenti" onclick="submitP5()">lo ha dicho la peligrosa</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P5 acierto -->
+  <section class="screen" id="screen-P5b">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-status">en línea</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>ya estas volviendo a ser poki poki
+me esta dando hasta cosa
+
+lo ultimo
+un crucigrama
+
+q si te lo doy to facil
+luego tus colegas dicen q soy una blanda
+y me piden el talego ellos</div>
+      </div>
+      <div class="controls gap-top">
+        <button class="btn tuenti" onclick="goTo('P6')">a por el crucigrama</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P6 -->
+  <section class="screen" id="screen-P6">
+    <div class="topbar tuenti">
+      <div class="avatar nenah">N</div>
+      <div>
+        <div class="topbar-name">crucigrama</div>
+        <div class="topbar-status">palabra de 6 letras</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline nenah">N</div>
+        <div class="bubble">
+<span class="nick">shu_nenah_pelogrosa</span>la palabra de 6 letras. pistas:</div>
+      </div>
+      <div class="crossword-hints">
+        <div>1. Lo q gira en la lavadora cuando tu madre no mira</div>
+        <div>2. Ni insta ni tiktok. Aq se escribia x las tardes</div>
+        <div>3. Lo primero q te pide la poli cuando para el stilo</div>
+        <div>4. Lo contrario de un coche de padre</div>
+        <div>5. Donde acaba un fiat cuando el poki se hace mayor (y se casa)</div>
+        <div>6. Lo q te van a dar tus colegas si dejas de ser un yerno</div>
+      </div>
+      <div class="crossword-row" id="crosswordRow"></div>
+      <div id="p6error"></div>
+      <div class="controls gap-top">
+        <input type="text" id="input-P6full" placeholder="o escribe la palabra entera aqui" autocomplete="off" maxlength="12">
+        <button class="btn tuenti" onclick="submitP6()">comprobar</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- P7 -->
+  <section class="screen" id="screen-P7">
+    <div class="topbar">
+      <div class="avatar morenito">M</div>
+      <div>
+        <div class="topbar-name">shu_morenito_19</div>
+        <div class="topbar-status">*nudge*</div>
+      </div>
+    </div>
+    <main>
+      <div class="bubble-row">
+        <div class="avatar-inline morenito">M</div>
+        <div class="bubble">
+<span class="nick">shu_morenito_19</span>*nudge*
+
+vale surmanito
+la peligrosa dice q lo partes
+pa mi eres tu
+el poki poki
+no el de las toallas
+
+el talego te lo deje donde se dejan las cosas
+cuando no quieres q se las lleve nadie
+ni un primo
+ni tus colegas
+q esos ya me lo intentaron birlar una vez
+de ahi q yo no me fie
+
+casa de tus padres
+el garaje
+el foso
+
+te lo he protegido
+a mi manera
+vas a ver una cosa rara
+parece el tambor de una lavadora
+esta pesao
+no lo mueve un perfil de instagram
+lo mueve un poki
+
+esa llave q te dieron el dia de la boda
+no era de adorno
+no era simbolica
+no era "el amor abre puertas"
+era la del garaje
+
+ve a por ello
+y no subas la foto al insta
+subela al tuenti
+ah espera
+
+xD</div>
+      </div>
+    </main>
+  </section>
+
+  <button class="restart-link" id="restartBtn" onclick="restartGame()">reiniciar juego</button>
+  <footer class="small">shu_morenito_19 &amp; shu_nenah_pelogrosa · 2026</footer>
+</div>
+
+<script>
+/* =========================================================================
+   CONFIG — cambia estos valores antes de subir el archivo
+   ========================================================================= */
+const CONFIG = {
+  instagram: "CAMBIAR_SIN_ARROBA",
+  matriculaAhora: "CAMBIAR",
+  matriculaStilo: "CAMBIAR",
+  whatsapp: "34XXXXXXXXX",
+  codigoFoto: "LOPARTE",
+  palabraCrucigrama: "TAMBOR"
+};
+
+const STORAGE_KEY = "poki_escape_progress_v1";
+
+/* ---------- normalizadores ---------- */
+function stripAccents(s){
+  return s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+}
+function normInstagram(s){
+  return (s||"").trim().toLowerCase().replace(/^@+/,"").replace(/\s+/g,"");
+}
+function normMatricula(s){
+  return (s||"").trim().toUpperCase().replace(/[\s\-\.]+/g,"");
+}
+function normWord(s){
+  return stripAccents((s||"").trim().toUpperCase()).replace(/\s+/g,"");
+}
+function normCode(s){
+  return (s||"").trim().toUpperCase();
+}
+
+/* ---------- config warning ---------- */
+function checkConfigWarning(){
+  const bad = Object.entries(CONFIG).filter(([k,v]) => String(v).toUpperCase().includes("CAMBIAR"));
+  const warn = document.getElementById("configWarning");
+  if(bad.length){
+    warn.style.display = "block";
+    warn.textContent = "⚠ faltan datos en CONFIG: " + bad.map(b=>b[0]).join(", ");
+  } else {
+    warn.style.display = "none";
+  }
+}
+
+/* ---------- navegación ---------- */
+function goTo(screenId){
+  document.querySelectorAll(".screen").forEach(el => el.classList.remove("active"));
+  const target = document.getElementById("screen-" + screenId);
+  if(target) target.classList.add("active");
+  localStorage.setItem(STORAGE_KEY, screenId);
+  window.scrollTo(0,0);
+}
+
+function restoreProgress(){
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved && document.getElementById("screen-" + saved)){
+    goTo(saved);
+  } else {
+    goTo("P0");
+  }
+}
+
+function restartGame(){
+  if(confirm("¿Reiniciar el juego desde el principio?")){
+    localStorage.removeItem(STORAGE_KEY);
+    goTo("P0");
+  }
+}
+
+/* logo: 5 taps también reinicia (modo prueba) */
+(function(){
+  let taps = 0;
+  let lastTap = 0;
+  document.addEventListener("DOMContentLoaded", () => {
+    const logo = document.getElementById("logoTap");
+    if(!logo) return;
+    logo.addEventListener("click", () => {
+      const now = Date.now();
+      if(now - lastTap > 1500) taps = 0;
+      taps++;
+      lastTap = now;
+      if(taps >= 5){
+        taps = 0;
+        restartGame();
+      }
+    });
+  });
+})();
+
+/* ---------- helpers de error ---------- */
+function showError(containerId, text){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '<div class="error-msg shake">' + escapeHtml(text) + '</div>';
+  setTimeout(() => {
+    const msg = el.querySelector(".error-msg");
+    if(msg) msg.classList.remove("shake");
+  }, 400);
+}
+function clearError(containerId){
+  document.getElementById(containerId).innerHTML = "";
+}
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.innerText = str;
+  return d.innerHTML;
+}
+
+/* ---------- P1: tuenti/messenger, cualquier valor avanza ---------- */
+function submitP1(){
+  goTo("P2");
+}
+
+/* ---------- P2: instagram ---------- */
+function submitP2(){
+  const val = document.getElementById("input-P2").value;
+  const norm = normInstagram(val);
+  const target = normInstagram(CONFIG.instagram);
+  if(norm.length === 0 || norm !== target){
+    showError("p2error",
+`ja
+no
+
+aqi no hay talego pa perfiles falsos
+ni pa nicks de boda
+ni pa "el marido de"
+
+ponte el de verdad
+o vete a ver reels`);
+    return;
+  }
+  clearError("p2error");
+  goTo("P2b");
+}
+
+/* ---------- P3: matricula ahora ---------- */
+function submitP3(){
+  const val = document.getElementById("input-P3").value;
+  const norm = normMatricula(val);
+  const target = normMatricula(CONFIG.matriculaAhora);
+  if(norm.length === 0 || norm !== target){
+    showError("p3error",
+`esa matricula no me suena ni a parking
+mira bien la del coche q llevas ahora
+no la del primo`);
+    return;
+  }
+  clearError("p3error");
+  goTo("P3b");
+}
+
+/* ---------- P4: matricula stilo ---------- */
+function submitP4(){
+  const val = document.getElementById("input-P4").value;
+  const norm = normMatricula(val);
+  const target = normMatricula(CONFIG.matriculaStilo);
+  if(norm.length === 0 || norm !== target){
+    showError("p4error",
+`no
+esa no
+
+esa matricula no ha pisado un parking en su vida
+piensa
+blanco
+3 puertas
+STILO
+no me hagas sacar el tuenti de 2007 q ahi salia`);
+    return;
+  }
+  clearError("p4error");
+  goTo("P4b");
+}
+
+/* ---------- P5: link whatsapp + codigo ---------- */
+function buildWaLink(){
+  const phone = (CONFIG.whatsapp || "").replace(/\D/g,"");
+  const text = "nenah aqi el poki\noutfit pa la fiesta\nno me dejes en visto q me caso";
+  const link = document.getElementById("waLink");
+  if(link){
+    link.href = "https://wa.me/" + phone + "?text=" + encodeURIComponent(text);
+  }
+}
+function submitP5(){
+  const val = document.getElementById("input-P5").value;
+  const norm = normCode(val);
+  const target = normCode(CONFIG.codigoFoto);
+  if(norm.length === 0 || norm !== target){
+    showError("p5error",
+`eso no me ha dicho a mi
+o no has mandado la foto
+o te ha dejado en visto
+mira el wasap`);
+    return;
+  }
+  clearError("p5error");
+  goTo("P5b");
+}
+
+/* ---------- P6: crucigrama ---------- */
+function buildCrossword(){
+  const word = CONFIG.palabraCrucigrama || "TAMBOR";
+  const row = document.getElementById("crosswordRow");
+  row.innerHTML = "";
+  for(let i=0; i<word.length; i++){
+    const box = document.createElement("input");
+    box.type = "text";
+    box.className = "letter-box";
+    box.maxLength = 1;
+    box.autocomplete = "off";
+    box.dataset.idx = i;
+    box.addEventListener("input", () => {
+      box.value = box.value.replace(/[^a-zA-ZñÑ]/g,"");
+      if(box.value && box.nextElementSibling && box.nextElementSibling.classList.contains("letter-box")){
+        box.nextElementSibling.focus();
+      }
+    });
+    box.addEventListener("keydown", (e) => {
+      if(e.key === "Backspace" && !box.value && box.previousElementSibling && box.previousElementSibling.classList.contains("letter-box")){
+        box.previousElementSibling.focus();
+      }
+    });
+    row.appendChild(box);
+  }
+}
+function submitP6(){
+  const target = normWord(CONFIG.palabraCrucigrama);
+  const fullInput = normWord(document.getElementById("input-P6full").value);
+  let fromBoxes = "";
+  document.querySelectorAll("#crosswordRow .letter-box").forEach(b => fromBoxes += b.value);
+  fromBoxes = normWord(fromBoxes);
+
+  const guess = fullInput.length ? fullInput : fromBoxes;
+
+  if(guess.length === 0 || guess !== target){
+    showError("p6error",
+`ni de coña
+piensa en lavadoras
+y en tesoros cutres`);
+    return;
+  }
+  clearError("p6error");
+  goTo("P7");
+}
+
+/* ---------- init ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  checkConfigWarning();
+  buildWaLink();
+  buildCrossword();
+  restoreProgress();
+
+  // enter para enviar en inputs de texto simples
+  [["input-P1","submitP1"],["input-P2","submitP2"],["input-P3","submitP3"],
+   ["input-P4","submitP4"],["input-P5","submitP5"],["input-P6full","submitP6"]]
+   .forEach(([id, fn]) => {
+     const el = document.getElementById(id);
+     if(el){
+       el.addEventListener("keydown", (e) => {
+         if(e.key === "Enter"){ window[fn](); }
+       });
+     }
+   });
+});
+</script>
+</body>
+</html>
