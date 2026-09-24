@@ -480,11 +480,6 @@ footer.small{
   border-radius:12px;
   background:#14141f;
 }
-.signatures-title{
-  font-size:0.8rem;
-  color:var(--text-dim);
-  margin-bottom:10px;
-}
 .signatures-names{
   display:flex;
   flex-wrap:wrap;
@@ -500,16 +495,6 @@ footer.small{
 .signatures-names span:last-child::after{
   content:"";
   margin-left:0;
-}
-.signatures-guille{
-  margin-top:14px;
-  padding-top:12px;
-  border-top:1px dashed #3a3a52;
-  font-size:1.15rem;
-  font-weight:800;
-  color:var(--gold);
-  text-align:center;
-  letter-spacing:0.5px;
 }
 .chat-link{
   color:#8ab4ff;
@@ -541,11 +526,14 @@ footer.small{
   border:0;
 }
 main > *{
-  transition:opacity .3s ease, transform .3s ease;
+  /* solo opacity, nunca transform: un transform en un antepasado del
+     iframe de youtube es un bug conocido de iOS/Safari que deja el
+     iframe visualmente bien pero sordo al tacto para siempre, aunque
+     el transform se quite despues */
+  transition:opacity .3s ease;
 }
 .msg-pending{
   opacity:0 !important;
-  transform:translateY(8px);
   pointer-events:none;
   animation:none !important;
 }
@@ -1246,11 +1234,9 @@ aqui te lo estabamos preparando</div>
       <img class="chat-photo final-photo" id="finalPhoto" src="" alt="donde te esperamos">
       <img class="chat-photo final-photo" id="groupPhoto" src="" alt="la pandilla">
       <div class="signatures">
-        <div class="signatures-title">y firmamos todos los colegas</div>
         <div class="signatures-names">
-          <span>Alberto</span><span>Álvaro</span><span>Armando</span><span>Borja</span><span>Carlos</span><span>César</span><span>David H</span><span>David DG</span><span>Isma</span><span>Ivan</span><span>Javi</span><span>Jose</span><span>Juli</span><span>Koko</span><span>Luis Angel</span><span>Miguel A</span><span>Natalia</span><span>Raul</span><span>Ruben</span><span>Victor</span>
+          <span>Alberto</span><span>Álvaro</span><span>Armando</span><span>Borja</span><span>Carlos</span><span>César</span><span>David H</span><span>David DG</span><span>Guille</span><span>Isma</span><span>Ivan</span><span>Javi</span><span>Jose</span><span>Juli</span><span>Koko</span><span>Luis Angel</span><span>Miguel A</span><span>Natalia</span><span>Raul</span><span>Ruben</span><span>Victor</span>
         </div>
-        <div class="signatures-guille">Guille</div>
       </div>
     </main>
   </section>
