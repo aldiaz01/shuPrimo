@@ -16,7 +16,10 @@
                          sin espacios ni signos. Ej: "34612345678"
    - codigoFoto:        código que la peña le dice a Adri por whatsapp
                          cuando la foto vale (por defecto LOPARTE)
-   - palabraCrucigrama: la palabra del crucigrama (por defecto TAMBOR)
+   - palabraCrucigrama: la palabra secreta que forman las casillas doradas
+                        del crucigrama (por defecto TAMBOR). Las 6 palabras
+                        y pistas del crucigrama están en CROSSWORD_WORDS,
+                        más abajo en el <script>, si quieres cambiarlas.
    No hace falta tocar nada más del archivo.
    ========================================================================= */
 :root{
@@ -241,19 +244,38 @@ input[type="text"]:focus{
   font-size:0.85rem;
   color:var(--text-dim);
 }
+.crossword-list{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin:10px 0;
+}
+.crossword-word{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.crossword-clue{
+  font-size:0.85rem;
+  color:var(--text-dim);
+}
+.crossword-clue b{
+  color:var(--text);
+}
 .crossword-row{
   display:flex;
   gap:6px;
   justify-content:center;
+  flex-wrap:wrap;
 }
 .letter-box{
-  width:38px;height:46px;
+  width:34px;height:42px;
   border-radius:8px;
   border:2px solid #2b2b40;
   background:#0f0f18;
   color:var(--text);
   text-align:center;
-  font-size:1.3rem;
+  font-size:1.2rem;
   font-weight:800;
   text-transform:uppercase;
   font-family:inherit;
@@ -261,6 +283,17 @@ input[type="text"]:focus{
 .letter-box:focus{
   outline:none;
   border-color:var(--gold);
+}
+.letter-box.special{
+  border-color:var(--gold);
+  box-shadow:0 0 0 1px var(--gold) inset;
+  color:var(--gold);
+}
+.letter-box.correct{
+  border-color:#3ecf6a;
+}
+.letter-box.wrong{
+  border-color:var(--error);
 }
 .cover{
   flex:1;
@@ -499,7 +532,7 @@ main > *{
        Antes de subir la web, crea esa carpeta y copia dentro tus dos mp3
        (los mismos que ya tienes) renombrados así:
          audio/soy-cani.mp3     -> suena al pulsar "abrir recado" (empieza el juego)
-         audio/talk-to-me.mp3   -> suena al empezar a hablar con shu_nenah_pelogrosa
+         audio/talk-to-me.mp3   -> suena al empezar a hablar con shu_nenah_peligrosa
        Si no existen esos archivos, la web funciona igual, simplemente sin música.
        ========================================================================= -->
   <audio id="bgMusicMorenito" src="audio/soy-cani.mp3" loop preload="none"></audio>
@@ -706,7 +739,7 @@ te dejo en visto hasta la siguiente boda</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_pelogrosa</span>ey
+<span class="nick">shu_nenah_peligrosa</span>ey
 Que pasa adrih!! soy shu_nenah_peligrosa
 
 a mi no me vengas de novio bonito y niño bueno
@@ -745,7 +778,7 @@ o eso digo pa quedar bien</div>
     <div class="topbar tuenti">
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
-        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-name">shu_nenah_peligrosa</div>
         <div class="topbar-status">en línea</div>
       </div>
     </div>
@@ -753,7 +786,7 @@ o eso digo pa quedar bien</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_pelogrosa</span>he consultado
+<span class="nick">shu_nenah_peligrosa</span>he consultado
 
 que mierda de coche es ese
 
@@ -778,7 +811,7 @@ es un coche de padre</div>
     <div class="topbar tuenti">
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
-        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-name">shu_nenah_peligrosa</div>
         <div class="topbar-status">escribiendo…</div>
       </div>
     </div>
@@ -786,7 +819,7 @@ es un coche de padre</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_pelogrosa</span>tu deberias tener un coche mas guapo
+<span class="nick">shu_nenah_peligrosa</span>tu deberias tener un coche mas guapo
 blanco
 3 puertas
 medio tuning
@@ -822,7 +855,7 @@ siempre estarah en su corazon</div>
     <div class="topbar tuenti">
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
-        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-name">shu_nenah_peligrosa</div>
         <div class="topbar-status">en línea</div>
       </div>
     </div>
@@ -830,7 +863,7 @@ siempre estarah en su corazon</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_pelogrosa</span>AAAAH
+<span class="nick">shu_nenah_peligrosa</span>AAAAH
 
 q coche mas wapo ninioh
 blanco
@@ -854,7 +887,7 @@ pero me vas demostrando que eres el autentico poki poki</div>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble bubble-photos">
-<span class="nick">shu_nenah_pelogrosa</span>mira mira
+<span class="nick">shu_nenah_peligrosa</span>mira mira
 esta la tengo guardada del radical
 <div class="photo-stack">
   <img id="stiloPhoto" class="chat-photo" alt="foto del stilo en el radical">
@@ -925,7 +958,7 @@ y me lo traes aqui</div>
     <div class="topbar tuenti">
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
-        <div class="topbar-name">shu_nenah_pelogrosa</div>
+        <div class="topbar-name">shu_nenah_peligrosa</div>
         <div class="topbar-status">en línea</div>
       </div>
     </div>
@@ -956,27 +989,18 @@ y me piden la pasta ellos. Puedes buscar en google que aquí no estan los curas 
       <div class="avatar nenah has-photo nenah-avatar"></div>
       <div>
         <div class="topbar-name">crucigrama</div>
-        <div class="topbar-status">palabra de 6 letras</div>
+        <div class="topbar-status">6 pistas, 6 palabras</div>
       </div>
     </div>
     <main>
       <div class="bubble-row">
         <div class="avatar-inline nenah has-photo nenah-avatar"></div>
         <div class="bubble">
-<span class="nick">shu_nenah_peligrosa</span>la palabra de 6 letras. pistas:</div>
+<span class="nick">shu_nenah_peligrosa</span>rellena cada palabra con su pista. las casillas doradas guardan una sorpresa</div>
       </div>
-      <div class="crossword-hints">
-        <div>1. Lo q gira en la lavadora cuando tu madre no mira</div>
-        <div>2. Ni insta ni tiktok. Aq se escribia x las tardes</div>
-        <div>3. Lo primero q te pide la poli cuando para el stilo</div>
-        <div>4. Lo contrario de un coche de padre</div>
-        <div>5. Donde acaba un fiat cuando el poki se hace mayor (y se casa)</div>
-        <div>6. Lo q te van a dar tus colegas si dejas de ser un yerno</div>
-      </div>
-      <div class="crossword-row" id="crosswordRow"></div>
+      <div class="crossword-list" id="crosswordList"></div>
       <div id="p6error"></div>
       <div class="controls gap-top">
-        <input type="text" id="input-P6full" placeholder="o escribe la palabra entera aqui" autocomplete="off" maxlength="12">
         <button class="btn tuenti" onclick="submitP6()">comprobar</button>
       </div>
     </main>
@@ -1025,7 +1049,7 @@ xD</div>
   </section>
 
   <button class="restart-link" id="restartBtn" onclick="restartGame()">reiniciar juego</button>
-  <footer class="small">shu_morenito_19 &amp; shu_nenah_pelogrosa · 2026</footer>
+  <footer class="small">shu_morenito_19 &amp; shu_nenah_peligrosa · 2026</footer>
 </div>
 
 <script>
@@ -1158,45 +1182,56 @@ function preparePending(screenEl){
   if(!main) return;
   Array.from(main.children).forEach(el => el.classList.add("msg-pending"));
 }
-function typeIntoBubble(bubble, nodes, onDone){
+function typeSegment(node, text, onDone){
   const cursor = document.createElement("span");
   cursor.className = "typing-cursor";
-  bubble.appendChild(cursor);
-  let idx = 0;
-  function processNext(){
-    if(idx >= nodes.length){
+  node.parentNode.insertBefore(cursor, node.nextSibling);
+  let ci = 0;
+  function step(){
+    if(ci >= text.length){
       cursor.remove();
       onDone();
       return;
     }
-    const node = nodes[idx];
-    if(node.nodeType === Node.TEXT_NODE){
-      const text = node.textContent;
-      const liveNode = document.createTextNode("");
-      bubble.insertBefore(liveNode, cursor);
-      let ci = 0;
-      function step(){
-        if(ci >= text.length){
-          idx++;
-          processNext();
-          return;
-        }
-        const ch = text[ci];
-        liveNode.textContent += ch;
-        ci++;
-        let delay = 9 + Math.random() * 10;
-        if(ch === "\n") delay = 70;
-        else if(ch === " ") delay = 4;
-        setTimeout(step, delay);
-      }
-      step();
+    const ch = text[ci];
+    node.textContent += ch;
+    ci++;
+    let delay = 9 + Math.random() * 10;
+    if(ch === "\n") delay = 70;
+    else if(ch === " ") delay = 4;
+    setTimeout(step, delay);
+  }
+  step();
+}
+function revealBubbleContent(bubble, onDone){
+  const nickEl = bubble.querySelector(".nick");
+  const nodes = Array.from(bubble.childNodes).filter(n => n !== nickEl);
+  // nada se saca nunca del DOM (ni imagenes ni el iframe del video): el texto
+  // se vacia y se vuelve a escribir letra a letra en su sitio, y las fotos o
+  // el video simplemente se hacen visibles cuando les toca. Asi el reproductor
+  // de youtube nunca pierde su estado y sigue respondiendo al tacto.
+  const queue = nodes.map(n => {
+    if(n.nodeType === Node.TEXT_NODE){
+      const text = n.textContent;
+      n.textContent = "";
+      return { node: n, type: "text", text: text };
+    }
+    n.style.opacity = "0";
+    n.style.transition = "opacity .3s ease";
+    return { node: n, type: "el" };
+  });
+  let idx = 0;
+  function next(){
+    if(idx >= queue.length){ onDone(); return; }
+    const item = queue[idx];
+    if(item.type === "text"){
+      typeSegment(item.node, item.text, () => { idx++; next(); });
     } else {
-      bubble.insertBefore(node, cursor);
-      idx++;
-      setTimeout(processNext, 120);
+      requestAnimationFrame(() => { item.node.style.opacity = "1"; });
+      setTimeout(() => { idx++; next(); }, 320);
     }
   }
-  processNext();
+  next();
 }
 function revealMessages(screenEl){
   const main = screenEl.querySelector("main");
@@ -1215,21 +1250,14 @@ function revealMessages(screenEl){
         typing.remove();
         el.classList.remove("msg-pending");
         const bubble = el.querySelector(".bubble");
-        // los bubbles con video o fotos no se "escriben": se detonan de golpe,
-        // asi el iframe/las imagenes nunca se separan del DOM (si se separan,
-        // el reproductor de youtube deja de responder al tacto/click)
-        const hasMedia = bubble && bubble.querySelector(".video-embed, .photo-stack");
-        if(bubble && !hasMedia){
-          const nickEl = bubble.querySelector(".nick");
-          const rest = Array.from(bubble.childNodes).filter(n => n !== nickEl);
-          rest.forEach(n => n.remove());
-          typeIntoBubble(bubble, rest, () => {
+        if(bubble){
+          revealBubbleContent(bubble, () => {
             i++;
             setTimeout(next, 260);
           });
         } else {
           i++;
-          setTimeout(next, 220);
+          setTimeout(next, 200);
         }
       }, typingDelay);
     } else {
@@ -1349,7 +1377,7 @@ function showLoading(text, speaker, callback, duration){
 /* ---------- helpers de error (burbuja de chat) ---------- */
 const SPEAKERS = {
   morenito: { nick: "shu_morenito_19", avatarClass: "morenito morenito-avatar has-photo", letter: "" },
-  nenah:    { nick: "shu_nenah_pelogrosa", avatarClass: "nenah nenah-avatar has-photo", letter: "" }
+  nenah:    { nick: "shu_nenah_peligrosa", avatarClass: "nenah nenah-avatar has-photo", letter: "" }
 };
 function showError(containerId, speaker, text){
   const el = document.getElementById(containerId);
@@ -1478,41 +1506,71 @@ mira el wasap`);
 }
 
 /* ---------- P6: crucigrama ---------- */
+const CROSSWORD_WORDS = [
+  { clue: "la unica red social de verdad, ahi se firmaba el muro y se etiquetaba la foto del espejo", answer: "TUENTI", special: 4 },
+  { clue: "color del mejor coche q has tenido, mucho mas STILO q el de ahora", answer: "BLANCO", special: 2 },
+  { clue: "lo q hay q ponerle al coche pa q suene mas q el motor, pa q te oigan en el parking antes de verte", answer: "AMPLIFICADOR", special: 1 },
+  { clue: "el elixir q te pides pa ronear y al quinto ya eres poki otra vez", answer: "CUBATA", special: 2 },
+  { clue: "en la cabeza, si la llevas recta eres un pringao, si la llevas bien eres tuenti 2008", answer: "GORRA", special: 1 },
+  { clue: "el souvenir de la fiesta, lo unico q te dura desde el sabado biche hasta el lunes", answer: "RESACA", special: 0 }
+];
 function buildCrossword(){
-  const word = CONFIG.palabraCrucigrama || "TAMBOR";
-  const row = document.getElementById("crosswordRow");
-  row.innerHTML = "";
-  for(let i=0; i<word.length; i++){
-    const box = document.createElement("input");
-    box.type = "text";
-    box.className = "letter-box";
-    box.maxLength = 1;
-    box.autocomplete = "off";
-    box.dataset.idx = i;
-    box.addEventListener("input", () => {
-      box.value = box.value.replace(/[^a-zA-ZñÑ]/g,"");
-      if(box.value && box.nextElementSibling && box.nextElementSibling.classList.contains("letter-box")){
-        box.nextElementSibling.focus();
-      }
-    });
-    box.addEventListener("keydown", (e) => {
-      if(e.key === "Backspace" && !box.value && box.previousElementSibling && box.previousElementSibling.classList.contains("letter-box")){
-        box.previousElementSibling.focus();
-      }
-    });
-    row.appendChild(box);
-  }
+  const list = document.getElementById("crosswordList");
+  list.innerHTML = "";
+  CROSSWORD_WORDS.forEach((w, wi) => {
+    const wordDiv = document.createElement("div");
+    wordDiv.className = "crossword-word";
+
+    const clueDiv = document.createElement("div");
+    clueDiv.className = "crossword-clue";
+    clueDiv.innerHTML = `<b>${wi+1}.</b> ${w.clue}`;
+    wordDiv.appendChild(clueDiv);
+
+    const row = document.createElement("div");
+    row.className = "crossword-row";
+    row.dataset.word = wi;
+    for(let i=0; i<w.answer.length; i++){
+      const box = document.createElement("input");
+      box.type = "text";
+      box.className = "letter-box";
+      if(i === w.special) box.classList.add("special");
+      box.maxLength = 1;
+      box.autocomplete = "off";
+      box.dataset.word = wi;
+      box.dataset.idx = i;
+      box.addEventListener("input", () => {
+        box.value = box.value.replace(/[^a-zA-ZñÑ]/g,"");
+        box.classList.remove("correct","wrong");
+        if(box.value && box.nextElementSibling && box.nextElementSibling.classList.contains("letter-box")){
+          box.nextElementSibling.focus();
+        }
+      });
+      box.addEventListener("keydown", (e) => {
+        if(e.key === "Backspace" && !box.value && box.previousElementSibling && box.previousElementSibling.classList.contains("letter-box")){
+          box.previousElementSibling.focus();
+        }
+      });
+      row.appendChild(box);
+    }
+    wordDiv.appendChild(row);
+    list.appendChild(wordDiv);
+  });
 }
 function submitP6(){
-  const target = normWord(CONFIG.palabraCrucigrama);
-  const fullInput = normWord(document.getElementById("input-P6full").value);
-  let fromBoxes = "";
-  document.querySelectorAll("#crosswordRow .letter-box").forEach(b => fromBoxes += b.value);
-  fromBoxes = normWord(fromBoxes);
-  const guess = fullInput.length ? fullInput : fromBoxes;
+  let allCorrect = true;
+  CROSSWORD_WORDS.forEach((w, wi) => {
+    const boxes = Array.from(document.querySelectorAll(`.letter-box[data-word="${wi}"]`));
+    const guess = normWord(boxes.map(b => b.value).join(""));
+    const ok = guess === normWord(w.answer);
+    boxes.forEach(b => {
+      b.classList.remove("correct","wrong");
+      b.classList.add(ok ? "correct" : "wrong");
+    });
+    if(!ok) allCorrect = false;
+  });
 
   showLoading("comprobando crucigrama", "nenah", () => {
-    if(guess.length === 0 || guess !== target){
+    if(!allCorrect){
       showError("p6error", "nenah",
 `ni de coña
 piensa en lavadoras
@@ -1538,7 +1596,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // enter para enviar en inputs de texto simples
   [["input-P1","submitP1"],["input-P2","submitP2"],["input-P3","submitP3"],
-   ["input-P4","submitP4"],["input-P5","submitP5"],["input-P6full","submitP6"]]
+   ["input-P4","submitP4"],["input-P5","submitP5"]]
    .forEach(([id, fn]) => {
      const el = document.getElementById(id);
      if(el){
@@ -1547,6 +1605,11 @@ document.addEventListener("DOMContentLoaded", () => {
        });
      }
    });
+  document.querySelectorAll("#crosswordList .letter-box").forEach(box => {
+    box.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){ submitP6(); }
+    });
+  });
 });
 </script>
 </body>
