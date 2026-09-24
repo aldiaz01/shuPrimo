@@ -270,6 +270,8 @@ input[type="text"]:focus{
   gap:22px;
   text-align:center;
   padding:40px 24px;
+  background-size:cover;
+  background-position:center;
 }
 .cover h1{
   font-size:2rem;
@@ -832,7 +834,7 @@ q yo soy peligrosa
 pero empiezas</div>
       </div>
       <div class="controls gap-top">
-        <button class="btn tuenti" onclick="goTo('P5')">ok nenah q te mando la foto</button>
+        <button class="btn tuenti" onclick="goTo('P5')">Nenah cuentame mas!!</button>
       </div>
     </main>
   </section>
@@ -1216,6 +1218,10 @@ function applyAvatarPhotos(){
   const adri2 = document.getElementById("adriPhoto2");
   if(adri1) adri1.src = ADRI_PHOTO_1;
   if(adri2) adri2.src = ADRI_PHOTO_2;
+  const cover = document.querySelector(".cover");
+  if(cover){
+    cover.style.backgroundImage = `linear-gradient(rgba(6,6,12,0.7), rgba(6,6,12,0.88)), url(${AVATAR_MORENITO})`;
+  }
 }
 
 /* ---------- pantalla de carga ---------- */
