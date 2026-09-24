@@ -12,16 +12,20 @@
                         (si pones "Adri.Poki" también vale, se normaliza solo)
    - matriculaAhora:    matrícula del coche que lleva ahora
    - matriculaStilo:    matrícula del Fiat Stilo blanco de 3 puertas
-   - whatsapp:          número de whatsapp de la peña, con prefijo 34 y
-                         sin espacios ni signos. Ej: "34612345678"
+   - whatsappGroupLink: enlace de invitación al grupo de whatsapp de la
+                         familia/peña. Ej: "https://chat.whatsapp.com/XXXXXXXXXXXXX"
+                         (Whatsapp solo deja abrir un chat con texto ya
+                         escrito si es un contacto individual, no un grupo;
+                         por eso el botón solo abre el grupo, y el mensaje
+                         se copia aparte con el botón "copiar mensaje")
    - codigoFoto:        código que la peña le dice a Adri por whatsapp
                          cuando la foto vale (por defecto LOPARTE)
    - palabraCrucigrama: la palabra secreta que forman las casillas doradas
                         del crucigrama (por defecto TAMBOR). Las 6 palabras
                         y pistas del crucigrama están en CROSSWORD_WORDS,
                         más abajo en el <script>, si quieres cambiarlas.
-   - palabraBanco:      la palabra que hay que escribir al llegar a los
-                        bancos de la cañada (por defecto POKIPOKI). Las
+   - palabraBanco:      el código que dejáis físicamente en el sitio de las
+                        coordenadas (por defecto LAFAMILAxPOKIPOKI). Las
                         coordenadas están más abajo, en la pantalla P4c.
    No hace falta tocar nada más del archivo.
    ========================================================================= */
@@ -358,6 +362,33 @@ input[type="text"]:focus{
 .cover .msn-icon{
   font-size:3.2rem;
 }
+.celebrate{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:26px;
+  text-align:center;
+  padding:40px 24px;
+}
+.celebrate-avatar{
+  width:150px;height:150px;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  background-color:#ff5ca8;
+  box-shadow:0 0 0 4px var(--gold), 0 10px 28px rgba(0,0,0,0.5);
+}
+.celebrate-text{
+  font-size:1.6rem;
+  font-weight:800;
+  color:var(--gold);
+  line-height:1.45;
+  letter-spacing:0.3px;
+  text-shadow:0 2px 10px rgba(0,0,0,0.45);
+  max-width:320px;
+}
 .config-warning{
   background:#3a0f14;
   color:#ffb3bd;
@@ -397,6 +428,35 @@ footer.small{
 .wa-note{
   font-size:0.82rem;
   color:var(--text-dim);
+}
+.wa-message-box{
+  background:#14141f;
+  border:1px dashed #3a3a52;
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:6px;
+}
+.wa-message-text{
+  white-space:pre-wrap;
+  font-size:0.9rem;
+  color:var(--text);
+  margin-bottom:10px;
+}
+.btn-copy{
+  width:100%;
+  border:none;
+  border-radius:10px;
+  padding:10px 12px;
+  font-weight:700;
+  font-size:0.85rem;
+  font-family:inherit;
+  color:var(--text);
+  background:#22223a;
+  cursor:pointer;
+}
+.btn-copy.copied{
+  background:#149441;
+  color:#fff;
 }
 .photo-stack{
   display:flex;
@@ -457,6 +517,11 @@ footer.small{
   word-break:break-all;
 }
 .bubble.bubble-video{
+  /* width fijo (no solo max-width) porque dentro de un flex-row la burbuja
+     se encoge al ancho del texto ("mira esto anda" es corto), y entonces
+     el video-embed de abajo (que es width:100%) heredaba ese ancho minusculo
+     y el boton de play de youtube quedaba diminuto e imposible de pulsar */
+  width:min(340px, 84vw);
   max-width:92%;
 }
 .video-embed{
@@ -985,17 +1050,17 @@ un poki poki de verdad no se demuestra desde el sofa
 levanta el culo y vete a estas coordenadas:
 40.05863913457762, -4.224579947534414
 
-alli en la cañada hay dos bancos
-esos bancos os han aguantado mas horas que a dos jubilados en su banco de toda la vida
+alli hay dos bancos que os han aguantado mas horas que a dos jubilados en el suyo de toda la vida
 han visto curdas, planes imposibles y a media pandilla dormida a las tantas
 
-sientate en uno de ellos como el jubilado que ya eres
-y escribe la palabra que siempre nos ha definido a todos</div>
+ahi mismo te hemos dejado un codigo
+mira bien, no esta a simple vista
+cuando lo encuentres, escribelo aqui</div>
       </div>
       <a class="btn wa" id="benchMapLink" href="https://www.google.com/maps?q=40.05863913457762,-4.224579947534414" target="_blank" rel="noopener">abrir ubicacion</a>
       <div id="p4cerror"></div>
       <div class="controls gap-top">
-        <input type="text" id="input-P4c" placeholder="la palabra de siempre" autocomplete="off">
+        <input type="text" id="input-P4c" placeholder="el codigo del banco" autocomplete="off">
         <button class="btn tuenti" onclick="submitP4c()">ya estoy sentado</button>
       </div>
     </main>
@@ -1043,8 +1108,14 @@ si te dicen q sales de tuenti 2008
 te sueltan un codigo
 y me lo traes aqui</div>
       </div>
-      <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">abrir wasap</a>
-      <div class="wa-note">cuando el grupo de la familia te de el codigo, ponlo aqui</div>
+      <div class="wa-message-box">
+        <div class="wa-message-text" id="waMessageText">familia aqi el poki
+outfit pa la fiesta
+decidme si me reconoceis y soltad el codigo q me caso</div>
+        <button class="btn-copy" id="waCopyBtn" onclick="copyWaMessage()">copiar mensaje</button>
+      </div>
+      <a class="btn wa" id="waLink" href="#" target="_blank" rel="noopener">abrir el grupo</a>
+      <div class="wa-note">copia el mensaje, pegalo en el grupo, y cuando te den el codigo, ponlo aqui</div>
       <div id="p5error"></div>
       <div class="controls gap-top">
         <input type="text" id="input-P5" placeholder="codigo" autocomplete="off">
@@ -1102,6 +1173,15 @@ y me piden la pasta ellos. Puedes buscar en google que aquí no estan los curas 
       </div>
       <div id="p6error"></div>
     </main>
+  </section>
+
+  <!-- P6b: felicitacion crucigrama -->
+  <section class="screen" id="screen-P6b">
+    <div class="celebrate">
+      <div class="celebrate-avatar has-photo nenah-avatar"></div>
+      <div class="celebrate-text">enorabuena ninioh<br>para mi ereh to un pokeritoh</div>
+      <button class="btn tuenti" onclick="goTo('P7')">seguir</button>
+    </div>
   </section>
 
   <!-- P7 -->
@@ -1187,10 +1267,10 @@ const CONFIG = {
   instagram: "adriiadrii",
   matriculaAhora: "0000XXX",
   matriculaStilo: "0000XXX",
-  whatsapp: "34XXXXXXXXX",
+  whatsappGroupLink: "https://chat.whatsapp.com/CAMBIAR-ESTE-ENLACE",
   codigoFoto: "LOPARTE",
   palabraCrucigrama: "TAMBOR",
-  palabraBanco: "POKIPOKI"
+  palabraBanco: "LAFAMILAxPOKIPOKI"
 };
 
 // Foto de shu_morenito_19 (avatar + pantalla de carga), incrustada en base64
@@ -1419,7 +1499,7 @@ function goTo(screenId, animate){
   }
 }
 
-const NENAH_SCREENS = ["P3", "P3b", "P4", "P4b", "P4c", "P5", "P5b", "P6", "P7", "P8"];
+const NENAH_SCREENS = ["P3", "P3b", "P4", "P4b", "P4c", "P5", "P5b", "P6", "P6b", "P7", "P8"];
 const MORENITO_SCREENS = ["P1", "P2", "P2b", "P2c"];
 function restoreProgress(){
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -1612,7 +1692,7 @@ no me hagas sacar el tuenti de 2007 q ahi salia`);
   });
 }
 
-/* ---------- P4c: mision en la vida real (bancos de la cañada) ---------- */
+/* ---------- P4c: mision en la vida real (codigo en los bancos) ---------- */
 function submitP4c(){
   const val = document.getElementById("input-P4c").value;
   showLoading("comprobando si estas sentado de verdad", "nenah", () => {
@@ -1623,8 +1703,8 @@ function submitP4c(){
 `eso no es
 te has sentado en el banco equivocado o te lo estas inventando desde el sofa
 
-esa palabra la sabe cualquiera que se haya sentado ahi con nosotros
-piensa en quien eramos antes de todo esto`);
+el codigo esta ahi mismo, en el banco
+mira bien antes de escribirlo`);
       return;
     }
     clearError("p4cerror");
@@ -1634,12 +1714,44 @@ piensa en quien eramos antes de todo esto`);
 
 /* ---------- P5: link whatsapp + codigo ---------- */
 function buildWaLink(){
-  const phone = (CONFIG.whatsapp || "").replace(/\D/g,"");
-  const text = "familia aqi el poki\noutfit pa la fiesta\ndecidme si me reconoceis y soltad el codigo q me caso";
+  // WhatsApp no permite abrir un grupo con un texto ya escrito (eso solo
+  // funciona con un contacto individual), asi que abrimos el enlace de
+  // invitacion del grupo y el mensaje se copia aparte con copyWaMessage().
   const link = document.getElementById("waLink");
   if(link){
-    link.href = "https://wa.me/" + phone + "?text=" + encodeURIComponent(text);
+    link.href = CONFIG.whatsappGroupLink || "#";
   }
+}
+function copyWaMessage(){
+  const text = document.getElementById("waMessageText").textContent;
+  const btn = document.getElementById("waCopyBtn");
+  const done = () => {
+    if(!btn) return;
+    const original = "copiar mensaje";
+    btn.textContent = "copiado ✓";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove("copied");
+    }, 1500);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, done){
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+  done();
 }
 function submitP5(){
   const val = document.getElementById("input-P5").value;
@@ -1713,17 +1825,29 @@ function buildCrossword(){
       const box = document.createElement("input");
       box.type = "text";
       box.className = "letter-box";
-      if(ci === w.special) box.classList.add("special");
+      const isSpecial = ci === w.special;
+      if(isSpecial) box.classList.add("special");
       box.maxLength = 1;
       box.autocomplete = "off";
+      box.autocapitalize = "characters";
+      box.spellcheck = false;
       box.dataset.row = ri;
       box.dataset.col = ci;
+      // color fijado tambien en linea (ademas del CSS) porque algunos
+      // navegadores moviles ignoran el color del texto en inputs si solo
+      // viene de la hoja de estilos
+      setCwBoxColor(box, isSpecial ? "#e8c15a" : "#f1eee6");
       box.addEventListener("input", () => onCwInput(box, ri));
       box.addEventListener("keydown", (e) => onCwKeydown(e, box, ri));
       cell.appendChild(box);
       grid.appendChild(cell);
     }
   });
+}
+
+function setCwBoxColor(box, hex){
+  box.style.color = hex;
+  box.style.webkitTextFillColor = hex;
 }
 
 function cwRowBoxes(ri){
@@ -1756,7 +1880,12 @@ function checkCwWord(ri){
   if(boxes.some(b => !b.value)) return;
   const guess = normWord(boxes.map(b => b.value).join(""));
   if(guess === normWord(w.answer)){
-    boxes.forEach(b => { b.classList.remove("wrong"); b.classList.add("correct"); b.disabled = true; });
+    boxes.forEach(b => {
+      b.classList.remove("wrong");
+      b.classList.add("correct");
+      b.disabled = true;
+      setCwBoxColor(b, "#8be3a6");
+    });
     checkCwAllDone();
   } else {
     boxes.forEach(b => b.classList.add("shake","wrong"));
@@ -1773,7 +1902,7 @@ function checkCwAllDone(){
   if(!allDone) return;
   clearError("p6error");
   showLoading("abriendo el ultimo mensaje", "nenah", () => {
-    goTo("P7");
+    goTo("P6b");
   });
 }
 
